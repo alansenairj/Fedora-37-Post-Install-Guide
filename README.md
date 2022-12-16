@@ -17,15 +17,94 @@ deltarpm=true
 ``` 
 * Note: The `fastestmirror=1` plugin can be counterproductive at times, use it at your own discretion. Set it to `fastestmirror=0` if you are facing bad download speeds. Many users have reported better download speeds with the plugin enables so it is there by default.
 
-## RPM Fusion
-* Fedora has disabled the repositories for a lot of free and non-free .rpm packages by default. Follow this if you want to use non-free software like Steam, Discord and some multimedia codecs etc. As a general rule of thumb its advised to do this get access to many mainstream useful programs.
-* `sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm`
-* also while you're at it, install app-stream metadata by
-* `sudo dnf groupupdate core`
+## Fix CKB-NEXT
+You need to install from source again. Never use RPM package
 
-## Update 
-* `sudo dnf -y upgrade --refresh`
-* Reboot
+* `sudo dnf install gcc gcc-c++ make cmake glibc zlib-devel qt5-qtbase-devel quazip-qt5-devel systemd-devel pulseaudio-libs-devel qt5-linguist qt5-qtx11extras-devel xcb-util-wm-devel xcb-util-devel libxcb-devel git dbusmenu-qt5-devel`
+* `cd /home/alan/ckb-next/`
+* `git pull`
+* `./quickinstall`
+
+##Install fonts
+* `sudo dnf install -y 'google-roboto*' 'mozilla-fira*' fira-code-fonts`
+
+
+## REPOSLIST CONFIGURATION
+
+Actual list of repos:
+```
+repo id                                                                   repo name
+anydesk                                                                   AnyDesk Fedora - stable
+balena-etcher                                                             balena-etcher
+balena-etcher-noarch                                                      balena-etcher-noarch
+balena-etcher-source                                                      balena-etcher-source
+brave-browser-rpm-release.s3.brave.com_x86_64_                            created by dnf config-manager from https://brave-browser-rpm-release.s3.brave.com/x86_64/
+copr:copr.fedorainfracloud.org:atim:gping                                 Copr repo for gping owned by atim
+copr:copr.fedorainfracloud.org:atim:lazydocker                            Copr repo for lazydocker owned by atim
+copr:copr.fedorainfracloud.org:dwmw2:openconnect                          Copr repo for openconnect owned by dwmw2
+copr:copr.fedorainfracloud.org:oprizal:timeshift-upstream                 Copr repo for timeshift-upstream owned by oprizal
+copr:copr.fedorainfracloud.org:t0xic0der:nvidia-auto-installer-for-fedora Copr repo for nvidia-auto-installer-for-fedora owned by t0xic0der
+copr:copr.fedorainfracloud.org:zirix:gdm-wallpaper                        Copr repo for gdm-wallpaper owned by zirix
+fedora                                                                    Fedora 37 - x86_64
+fedora-cisco-openh264                                                     Fedora 37 openh264 (From Cisco) - x86_64
+fedora-modular                                                            Fedora Modular 37 - x86_64
+hashicorp                                                                 Hashicorp Stable - x86_64
+phracek-PyCharm                                                           Copr repo for PyCharm owned by phracek
+rpmfusion-free                                                            RPM Fusion for Fedora 37 - Free
+rpmfusion-free-tainted                                                    RPM Fusion for Fedora 37 - Free tainted
+rpmfusion-free-updates                                                    RPM Fusion for Fedora 37 - Free - Updates
+rpmfusion-nonfree                                                         RPM Fusion for Fedora 37 - Nonfree
+rpmfusion-nonfree-nvidia-driver                                           RPM Fusion for Fedora 37 - Nonfree - NVIDIA Driver
+rpmfusion-nonfree-steam                                                   RPM Fusion for Fedora 37 - Nonfree - Steam
+rpmfusion-nonfree-updates                                                 RPM Fusion for Fedora 37 - Nonfree - Updates
+rpmsphere                                                                 RPM Sphere - Basearch
+rpmsphere-noarch                                                          RPM Sphere - Noarch
+sandrospadaro                                                             RPM by Sandro Spadaro
+teamviewer                                                                TeamViewer - x86_64
+updates                                                                   Fedora 37 - x86_64 - Updates
+updates-modular                                                           Fedora Modular 37 - x86_64 - Updates
+virtualbox                                                                Fedora  -  - VirtualBox
+vscode                                                                    Visual Studio Code
+```
+## Update system configuration files
+
+* `sudo dnf install rpmconf`
+* `sudo rpmconf -a - Yes for all`  
+
+## Clean-up retired packages
+
+* `sudo dnf install remove-retired-packages`
+* `remove-retired-packages`
+* `sudo dnf install remove-retired-packages`
+* `remove-retired-packages 35`
+* `sudo dnf repoquery --unsatisfied`
+* `sudo dnf repoquery --duplicates`
+
+
+## Remove old kernels
+run script ~/./removeoldkernels
+
+Exemple:
+```
+#!/usr/bin/env bash
+
+old_kernels=($(dnf repoquery --installonly --latest-limit=-1 -q))
+if [ "${#old_kernels[@]}" -eq 0 ]; then
+    echo "No old kernels found"
+    exit 0
+fi
+
+if ! dnf remove "${old_kernels[@]}"; then
+    echo "Failed to remove old kernels"
+    exit 1
+fi
+
+echo "Removed old kernels"
+exit 0
+```
+![image](https://user-images.githubusercontent.com/20565821/208081868-3aee6f37-f453-4715-88ae-43318bcf01f1.png)
+
+
 
 ## Firmware
 * If your system supports firmware update delivery through lvfs, update your device firmware by:
@@ -36,100 +115,35 @@ sudo fwupdmgr get-updates
 sudo fwupdmgr update
 ```
 
-## NVIDIA Drivers
-* Only follow this if you have a NVIDIA gpu. Also, don't follow this if you have a gpu which has dropped support for newer driver releases i.e. anything earlier than nvidia GT/GTX 600, 700, 800, 900, 1000, 1600 and RTX 2000, 3000 series. Fedora comes preinstalled with NOUVEAU drivers which may or may not work better on those older GPUs. This should be followed by Desktop and Laptop users alike.
-* Disable Secure Boot.
-* `sudo dnf update` #To make sure you're on the latest kernel and then reboot.
-* Enable RPM Fusion Nvidia non-free repository in the app store and install from there,
-* or alternatively
-* `sudo dnf install akmod-nvidia`
-* Install this if you use applications that use CUDA i.e. Davinci Resolve, Blender etc.
-* `sudo dnf install xorg-x11-drv-nvidia-cuda`
-* Wait for atleast 5 mins before rebooting, to let the kermel module get built.
-* `modinfo -F version nvidia` #Check if the kernel module is built.
-* Reboot
-
-## Battery Life
-* Follow this if you have a Laptop.
-* power-profiles-daemon works great on many systems but in case you're facing sub-optimal battery backup try installing tlp by:
-* `sudo dnf install tlp tlp-rdw`
-* and mask power-profiles-daemon by:
-* `sudo systemctl mask power-profiles-daemon`
-* Also install powertop by:
-* `sudo dnf install powertop`
-* `sudo powertop --auto-tune`
-
-## Media Codecs
-* Install these to get proper multimedia playback.
-````
-sudo dnf groupupdate multimedia --setop="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin
-sudo dnf groupupdate sound-and-video
-sudo dnf install gstreamer1-plugins-{bad-\*,good-\*,base} gstreamer1-plugin-openh264 gstreamer1-libav --exclude=gstreamer1-plugins-bad-free-devel ffmpeg gstreamer-ffmpeg
-sudo dnf install lame\* --exclude=lame-devel
-sudo dnf group upgrade --with-optional Multimedia
-````
-
-## H/W Video Acceleration
-* Helps decrease load on the CPU when watching videos online by alloting the rendering to the dGPU/iGPU. Quite helpful in increasing battery backup on laptops.
-
-### H/W Video Decoding with VA-API 
-* `sudo dnf install ffmpeg ffmpeg-libs libva libva-utils`
-
-<details>
-<summary>Intel</summary>
- 
-* If you have an intel chipset after installing the packages above., Do:
-* `sudo dnf install intel-media-driver`
-</details>
-
-<details>
-<summary>AMD</summary>No need to do this for intel integrated graphics. Mesa drivers are for AMD graphics, who lost support for h264/h245 in the fedora repositories in f37 due to legal concerns.
- 
-* If you have an AMD chipset, after installing the packages above do:
+## NVIDIA Drivers - Nouveu driver cannot load UI
+You must remove old driver and reinstall it. If screen remains only prompting press F6, F2 or something to load terminal.
 ```
-sudo dnf swap mesa-va-drivers mesa-va-drivers-freeworld
+sudo dnf remove \*nvidia\* --exclude=nvidia-gpu-firmware 
+sudo dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda
 ```
-</details>
 
 ### OpenH264 for Firefox
 * Enable the OpenH264 Plugin in Firefox's settings.
 
 ## Update Flatpak
-* `flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo`
+
 * `flatpak update`
 
-## Set Hostname
-* `hostnamectl set-hostname YOUR_HOSTNAME`
 
-## Speed Boost
-* Allow you to squeeze out a little bit more performance from your system. Do not follow this if you share services and files through your network or are using fedora in a VM.
-* Install Grub Customizer to implement these tweaks by
-* `sudo dnf install grub-customizer` 
+# Terminal font and config
 
-### Disable Mitigations 
-* Increases performance in multithreaded systems. The more core count you have the greater the performance gain. Not advised for host systems on some networks for increased security vulnerabilities, using it on daily driver systems won't fetch any problems. 5-30% performance gain varying upon systems.
-* Add `mitigations=off` in Kernel Parameters under General Settings in Grub Customizer and click save.
+![image](https://user-images.githubusercontent.com/20565821/208084409-8466e335-ec91-4377-bf20-b06771e0f422.png)
 
-### Zswap (for systems with <16 gigs of RAM)
-* Acts as virtual memory. Useful for sytems with <16 gigs of ram.
-* Add `zswap.enabled=1` in Kernel Parameters under General Settings in Grub Customizer and click save.
 
 ## Gnome Extensions
-* Don't install these if you are using a different spin of Fedora.
-* Pop Shell - `sudo dnf install -y gnome-shell-extension-pop-shell xprop`
-* [GSconnect](https://extensions.gnome.org/extension/1319/gsconnect/) - do `sudo dnf install nautilus-python` for full support.
-* [Gesture Improvements](https://extensions.gnome.org/extension/4245/gesture-improvements/)
-* [User Themes](https://extensions.gnome.org/extension/19/user-themes/)
-* [Just Perfection](https://extensions.gnome.org/extension/3843/just-perfection/)
-* [Dash to Dock](https://extensions.gnome.org/extension/307/dash-to-dock/)
-* [Quick Settings Tweaker](https://extensions.gnome.org/extension/5446/quick-settings-tweaker/)
-* [Blur My Shell](https://extensions.gnome.org/extension/3193/blur-my-shell/)
-* [Bluetooth Quick Connect](https://extensions.gnome.org/extension/1401/bluetooth-quick-connect/)
-* [App Indicator Support](https://extensions.gnome.org/extension/615/appindicator-support/)
-* [Clipboard Indicator](https://extensions.gnome.org/extension/779/clipboard-indicator/)
-* [Legacy (GTK3) Theme Scheme Auto Switcher](https://extensions.gnome.org/extension/4998/legacy-gtk3-theme-scheme-auto-switcher/)
-* [Caffeine](https://extensions.gnome.org/extension/517/caffeine/)
-* [Vitals](https://extensions.gnome.org/extension/1460/vitals/)
+
+```
+![image](https://user-images.githubusercontent.com/20565821/208085611-f4e2afb7-fba9-4da5-83ad-7724bb12f5d6.png)
+![image](https://user-images.githubusercontent.com/20565821/208085734-369fb552-b4d1-4f65-b98d-eca35420eea2.png)
+
+
+```
+
 
 ## Apps [Optional]
 * Packages for Rar and 7z compressed files support:
