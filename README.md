@@ -17,7 +17,7 @@ deltarpm=true
 ``` 
 * Note: The `fastestmirror=1` plugin can be counterproductive at times, use it at your own discretion. Set it to `fastestmirror=0` if you are facing bad download speeds. Many users have reported better download speeds with the plugin enables so it is there by default.
 
-## Fix CKB-NEXT
+## Fix CKB-NEXT - my keyboard software and driver for corsair keyboard
 You need to install from source again. Never use RPM package
 
 * `sudo dnf install gcc gcc-c++ make cmake glibc zlib-devel qt5-qtbase-devel quazip-qt5-devel systemd-devel pulseaudio-libs-devel qt5-linguist qt5-qtx11extras-devel xcb-util-wm-devel xcb-util-devel libxcb-devel git dbusmenu-qt5-devel`
@@ -25,11 +25,11 @@ You need to install from source again. Never use RPM package
 * `git pull`
 * `./quickinstall`
 
-##Install fonts
+##Install terminal fonts
 * `sudo dnf install -y 'google-roboto*' 'mozilla-fira*' fira-code-fonts`
 
 
-## REPOSLIST CONFIGURATION
+## My REPOSLIST CONFIGURATION
 
 Actual list of repos:
 ```
@@ -81,27 +81,6 @@ vscode                                                                    Visual
 * `sudo dnf repoquery --duplicates`
 
 
-## Remove old kernels
-run script ~/./removeoldkernels
-
-Exemple:
-```
-#!/usr/bin/env bash
-
-old_kernels=($(dnf repoquery --installonly --latest-limit=-1 -q))
-if [ "${#old_kernels[@]}" -eq 0 ]; then
-    echo "No old kernels found"
-    exit 0
-fi
-
-if ! dnf remove "${old_kernels[@]}"; then
-    echo "Failed to remove old kernels"
-    exit 1
-fi
-
-echo "Removed old kernels"
-exit 0
-```
 ![image](https://user-images.githubusercontent.com/20565821/208081868-3aee6f37-f453-4715-88ae-43318bcf01f1.png)
 
 ## Remove Packagekit - Gnome download a lot of garbage for nothing. It is better to use only DNF to update. 
@@ -160,7 +139,7 @@ chmod +x notify.sh
 ![image](https://user-images.githubusercontent.com/20565821/208162306-23cf9bf9-e785-4b1a-ab5d-029a02796efd.png)
 
 
-## Firmware
+## Firmware updates
 * If your system supports firmware update delivery through lvfs, update your device firmware by:
 ```
 sudo fwupdmgr get-devices 
@@ -169,12 +148,37 @@ sudo fwupdmgr get-updates
 sudo fwupdmgr update
 ```
 
-## NVIDIA Drivers - Nouveu driver cannot load UI
+## NVIDIA Drivers - Nouveu driver cannot load UI. Fedora cannot install your Nvidia Driver by default and you kernel cannot load updated driver. 
 You must remove old driver and reinstall it. If screen remains only prompting press F6, F2 or something to load terminal.
 ```
 sudo dnf remove \*nvidia\* --exclude=nvidia-gpu-firmware 
 sudo dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda
 ```
+
+
+## Remove old kernels after install Nvidia driver
+run script ~/./removeoldkernels
+
+Exemple:
+```
+#!/usr/bin/env bash
+
+old_kernels=($(dnf repoquery --installonly --latest-limit=-1 -q))
+if [ "${#old_kernels[@]}" -eq 0 ]; then
+    echo "No old kernels found"
+    exit 0
+fi
+
+if ! dnf remove "${old_kernels[@]}"; then
+    echo "Failed to remove old kernels"
+    exit 1
+fi
+
+echo "Removed old kernels"
+exit 0
+```
+
+
 
 ### OpenH264 for Firefox
 * Enable the OpenH264 Plugin in Firefox's settings.
