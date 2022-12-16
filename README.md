@@ -206,7 +206,7 @@ https://extensions.gnome.org/extension/307/dash-to-dock/
 ![image](https://user-images.githubusercontent.com/20565821/208087269-836e82c6-073c-401a-9c03-ec0f4dea0052.png)
 
 ### Second fix - When runned bleachit the problem appears again.
-``
+```
 dconf write /org/gnome/shell/extensions/dash-to-dock/disable-overview-on-startup true
 reload gnome: 
 ALT+F2 - "r" ( just r and enter)
