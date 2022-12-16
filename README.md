@@ -141,6 +141,12 @@ sudo dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda
 ![image](https://user-images.githubusercontent.com/20565821/208085734-369fb552-b4d1-4f65-b98d-eca35420eea2.png)
 
 
+## Search duplicating pressed key in Gnome
+Go to Gnome extensions and disable and enable again DashtoDock extension
+https://extensions.gnome.org/extension/307/dash-to-dock/
+
+![image](https://user-images.githubusercontent.com/20565821/208087269-836e82c6-073c-401a-9c03-ec0f4dea0052.png)
+
 
 ## Theming [Optional]
 
