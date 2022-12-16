@@ -89,6 +89,10 @@ systemctl disable --now packagekit
 systemctl mask packagekit 
 rm -rf /var/cache/PackageKit/
 ```
+Disable notifications
+![image](https://user-images.githubusercontent.com/20565821/208187730-a35871bc-4003-4518-be2d-c91aad70abce.png)
+
+
 ## Use dnf-automatic to inform you with a notification in gnome you need to do updates for your system.
 ```
 dnf install dnf-automatic
