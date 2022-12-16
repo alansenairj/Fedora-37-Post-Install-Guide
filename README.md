@@ -104,6 +104,60 @@ exit 0
 ```
 ![image](https://user-images.githubusercontent.com/20565821/208081868-3aee6f37-f453-4715-88ae-43318bcf01f1.png)
 
+## Remove Packagekit - Gnome download a lot of garbage for nothing. It is better to use only DNF to update. 
+```
+systemctl disable --now packagekit 
+systemctl mask packagekit 
+rm -rf /var/cache/PackageKit/
+```
+## Use dnf-automatic to inform you with a notification in gnome you need to do updates for your system.
+```
+dnf install dnf-automatic
+vi /etc/dnf/automatic.conf
+```
+
+```
+change :
+[emitters] 
+emit_via = motd
+```
+
+```
+systemctl enable dnf-automatic-notifyonly.timer
+systemctl start dnf-automatic-notifyonly.timer
+systemctl enable dnf-automatic.timer
+systemctl start dnf-automatic.timer
+systemctl status dnf-automatic-notifyonly.timer
+```
+
+### write scrpit to check if motd file has changed in 7 days and then notify a message in gnome informing how many updates you need to do
+:> notify.sh
+
+```
+   1   │ #!/bin/bash
+   2   │ 
+   3   │ # Set the threshold for the age of the file in days
+   4   │ threshold=7
+   5   │ updates=$(cat /etc/motd | awk 'END{print}')
+   6   │ # Get the current time in seconds
+   7   │ current_time=$(date +%s)
+   8   │ 
+   9   │ # Get the modification time of the file in seconds
+  10   │ modification_time=$(stat -c %Y /etc/motd)
+  11   │ 
+  12   │ # Calculate the age of the file in days
+  13   │ age=$(( (current_time - modification_time) / 60 / 60 / 24 ))
+  14   │ 
+  15   │ # Check if the age of the file is greater than the threshold
+  16   │ if [ $age -gt $threshold ]; then
+  17   │   # Send a notification using notify-send
+  18   │   notify-send -t 5000 "Please $updates. Backup your system and do dnf update"
+  19   │ fi
+```
+
+chmod +x notify.sh
+
+![image](https://user-images.githubusercontent.com/20565821/208162306-23cf9bf9-e785-4b1a-ab5d-029a02796efd.png)
 
 
 ## Firmware
