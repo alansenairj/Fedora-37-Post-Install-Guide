@@ -137,43 +137,10 @@ sudo dnf install akmod-nvidia xorg-x11-drv-nvidia-cuda
 
 ## Gnome Extensions
 
-```
 ![image](https://user-images.githubusercontent.com/20565821/208085611-f4e2afb7-fba9-4da5-83ad-7724bb12f5d6.png)
 ![image](https://user-images.githubusercontent.com/20565821/208085734-369fb552-b4d1-4f65-b98d-eca35420eea2.png)
 
 
-```
-
-
-## Apps [Optional]
-* Packages for Rar and 7z compressed files support:
- `sudo dnf install -y unzip p7zip p7zip-plugins unrar`
-* These are Some Packages that I use and would recommend:
-```
-Ferdium
-Books 
-Ulauncher 
-Blanket
-Krita
-Deja Dup Backups
-Blender
-Logseq
-Joplin
-Transmission
-yt-dlp
-Celluloid
-Pika backup 
-Amberol
-News flash
-Foliate
-Tangram
-VS Codium
-Blanket
-Easyeffects
-Gradience
-Money
-Khronos
-```
 
 ## Theming [Optional]
 
